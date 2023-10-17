@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:veler/features/screens/login_screen.dart';
+import 'package:veler/features/screens/splash/splash_screen.dart';
 import 'package:veler/shared/themes/dark_theme.dart';
 
 class AppWidget extends StatelessWidget {
@@ -11,7 +11,7 @@ class AppWidget extends StatelessWidget {
       title: 'Veler',
       debugShowCheckedModeBanner: false,
       theme: darkTheme,
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }
