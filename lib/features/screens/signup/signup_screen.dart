@@ -1,21 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:veler/features/screens/login/login_screen.dart';
 import 'package:http/http.dart' as http;
-import 'package:veler/features/screens/home/home_screen.dart';
-import 'package:veler/features/screens/signup/signup_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final _formKey = GlobalKey<FormState>();
+    final _nameController = TextEditingController();
     final _emailController = TextEditingController();
     final _passwordController = TextEditingController();
 
@@ -47,9 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
             title: Text(
               title,
               style: const TextStyle(
-                  fontFamily: "Nunito",
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16
+                fontFamily: "Nunito",
+                fontWeight: FontWeight.w700,
+                fontSize: 16
               ),
             ),
           ),
@@ -59,32 +59,30 @@ class _LoginScreenState extends State<LoginScreen> {
 
     Future<void> handleLogin() async {
       Map<String, dynamic> data = {
+        "name": _nameController.text,
         "email": _emailController.text,
         "password": _passwordController.text
       };
 
       try {
         final response = await http
-            .post(Uri.parse("http://10.0.2.2:3000/auth/signin"), body: data);
+            .post(Uri.parse("http://10.0.2.2:3000/auth/signup"), body: data);
 
-        final body = jsonDecode(response.body);
         if (response.statusCode == 200 || response.statusCode == 201) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ),
-          );
-          debugPrint(body.toString());
+          showSnackBar("User sucessfully created", Icons.done_rounded, Colors.green);
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginScreen()));
         } else {
+          final body = jsonDecode(response.body);
           showSnackBar(body["error"], Icons.warning_rounded, Colors.red);
         }
       } catch (err) {
-        debugPrint(err.toString());
-        showSnackBar("Something went wrong", Icons.router_outlined, Colors.red);
+        showSnackBar("Something went wrong", Icons.warning_rounded, Colors.red);
       }
     }
 
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(18),
@@ -102,6 +100,33 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    TextFormField(
+                      controller: _nameController,
+                      keyboardType: TextInputType.name,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(
+                          Icons.person_rounded,
+                          color: Color(0xffBCBCBC),
+                        ),
+                        hintText: "Joe Doe",
+                        hintStyle: const TextStyle(
+                          fontFamily: "Nunito",
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            width: 2,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ),
+                        ),
+                      ),
+                      validator: (String? value) {
+                        if (value!.isEmpty) return "This field is required";
+
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -184,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Don't have an account ?",
+                    "Already have an account ?",
                     style: TextStyle(
                       fontSize: 16,
                       fontFamily: "Nunito",
@@ -195,11 +220,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextButton(
                     onPressed: () => Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                        builder: (context) => const SignupScreen(),
+                        builder: (context) => const LoginScreen(),
                       ),
                     ),
                     child: Text(
-                      "Sign up.",
+                      "Sign in.",
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: "Nunito",
