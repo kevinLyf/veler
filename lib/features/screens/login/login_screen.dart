@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:veler/features/screens/home/home_screen.dart';
 import 'package:veler/features/screens/signup/signup_screen.dart';
+import 'package:veler/shared/services/auth/Auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -69,6 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
         final body = jsonDecode(response.body);
         if (response.statusCode == 200 || response.statusCode == 201) {
+          Auth.setId(body["id"]);
+          Auth.setName(body["name"]);
+          Auth.setEmail(body["email"]);
+          Auth.setPassword(body["password"]);
+          Auth.setAdmin(body["admin"]);
+
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => const HomeScreen(),
