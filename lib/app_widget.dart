@@ -11,6 +11,7 @@ class AppWidget extends StatelessWidget {
       title: 'Veler',
       debugShowCheckedModeBanner: false,
       theme: darkTheme,
+      darkTheme: darkTheme,
       home: const SplashScreen(),
     );
   }
