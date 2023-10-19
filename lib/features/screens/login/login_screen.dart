@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:veler/features/screens/home/home_screen.dart';
+import 'package:veler/features/screens/menu/menu_screen.dart';
 import 'package:veler/features/screens/signup/signup_screen.dart';
 import 'package:veler/shared/services/auth/Auth.dart';
 
@@ -78,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
+              builder: (context) => const MenuScreen(),
             ),
           );
         } else {

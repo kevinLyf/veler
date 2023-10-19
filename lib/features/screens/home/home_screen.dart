@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.secondary,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           "VELER",
           style: TextStyle(
@@ -240,6 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(
                                   item.description ?? "Not informed",
                                   maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontFamily: "Nunito",
                                     fontWeight: FontWeight.w600,
