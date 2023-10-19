@@ -12,75 +12,79 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
-    final _nameController = TextEditingController();
-    final _emailController = TextEditingController();
-    final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-    void showLoaderDialog(BuildContext context) {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(strokeAlign: 3),
-              ],
-            ),
-          );
-        },
-      );
-    }
+  void showLoaderDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          backgroundColor: Colors.transparent,
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(strokeAlign: 3),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-    void showSnackBar(String title, IconData icon, Color color) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: color,
-          content: ListTile(
-            leading: Icon(icon, size: 30, color: Colors.white,),
-            title: Text(
-              title,
-              style: const TextStyle(
+  void showSnackBar(String title, IconData icon, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: color,
+        content: ListTile(
+          leading: Icon(
+            icon,
+            size: 30,
+            color: Colors.white,
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
                 fontFamily: "Nunito",
                 fontWeight: FontWeight.w700,
-                fontSize: 16
-              ),
-            ),
+                fontSize: 16),
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
-    Future<void> handleLogin() async {
-      Map<String, dynamic> data = {
-        "name": _nameController.text,
-        "email": _emailController.text,
-        "password": _passwordController.text
-      };
+  Future<void> handleLogin() async {
+    Map<String, dynamic> data = {
+      "name": _nameController.text,
+      "email": _emailController.text,
+      "password": _passwordController.text
+    };
 
-      try {
-        final response = await http
-            .post(Uri.parse("http://10.0.2.2:3000/auth/signup"), body: data);
+    try {
+      final response = await http
+          .post(Uri.parse("http://10.0.2.2:3000/auth/signup"), body: data);
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          showSnackBar("User sucessfully created", Icons.done_rounded, Colors.green);
-          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const LoginScreen()));
-        } else {
-          final body = jsonDecode(response.body);
-          showSnackBar(body["error"], Icons.warning_rounded, Colors.red);
-        }
-      } catch (err) {
-        showSnackBar("Something went wrong", Icons.warning_rounded, Colors.red);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        showSnackBar(
+            "User sucessfully created", Icons.done_rounded, Colors.green);
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const LoginScreen()));
+      } else {
+        final body = jsonDecode(response.body);
+        showSnackBar(body["error"], Icons.warning_rounded, Colors.red);
       }
+    } catch (err) {
+      showSnackBar("Something went wrong", Icons.warning_rounded, Colors.red);
     }
+  }
 
-
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(

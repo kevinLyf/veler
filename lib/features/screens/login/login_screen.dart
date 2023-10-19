@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:veler/features/screens/home/home_screen.dart';
 import 'package:veler/features/screens/menu/menu_screen.dart';
 import 'package:veler/features/screens/signup/signup_screen.dart';
 import 'package:veler/shared/services/auth/Auth.dart';
+import 'package:veler/shared/services/auth/LocalAuth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,81 +15,115 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   @override
-  Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
-    final _emailController = TextEditingController();
-    final _passwordController = TextEditingController();
+  void initState() {
+    tryUsingBiometrics();
+    super.initState();
+  }
 
-    void showLoaderDialog(BuildContext context) {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            backgroundColor: Colors.transparent,
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(strokeAlign: 3),
-              ],
-            ),
-          );
-        },
-      );
-    }
+  void showLoaderDialog(BuildContext context) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          backgroundColor: Colors.transparent,
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(strokeAlign: 3),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-    void showSnackBar(String title, IconData icon, Color color) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: color,
-          content: ListTile(
-            leading: Icon(icon, size: 30, color: Colors.white,),
-            title: Text(
-              title,
-              style: const TextStyle(
-                  fontFamily: "Nunito",
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16
-              ),
-            ),
+  void showSnackBar(String title, IconData icon, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: color,
+        content: ListTile(
+          leading: Icon(
+            icon,
+            size: 30,
+            color: Colors.white,
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
+                fontFamily: "Nunito",
+                fontWeight: FontWeight.w700,
+                fontSize: 16),
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
-    Future<void> handleLogin() async {
-      Map<String, dynamic> data = {
-        "email": _emailController.text,
-        "password": _passwordController.text
-      };
+  Future<void> tryUsingBiometrics() async {
+    await Auth.getId().then((id) async {
+      if (id.isEmpty || id == "") return;
 
-      try {
-        final response = await http
-            .post(Uri.parse("http://10.0.2.2:3000/auth/signin"), body: data);
-
-        final body = jsonDecode(response.body);
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          Auth.setId(body["id"]);
-          Auth.setName(body["name"]);
-          Auth.setEmail(body["email"]);
-          Auth.setPassword(body["password"]);
-          Auth.setAdmin(body["admin"]);
-
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const MenuScreen(),
-            ),
-          );
-        } else {
-          showSnackBar(body["error"], Icons.warning_rounded, Colors.red);
-        }
-      } catch (err) {
-        showSnackBar("Something went wrong", Icons.router_outlined, Colors.red);
+      if (await LocalAuth().authenticate()) {
+        showSnackBar(
+          "Autenticação Biométrica feita com sucesso",
+          Icons.fingerprint_rounded,
+          Colors.green,
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MenuScreen(),
+          ),
+        );
+      } else {
+        showSnackBar(
+          "Biometria fracassou",
+          Icons.fingerprint_rounded,
+          Colors.red,
+        );
       }
-    }
+    });
+  }
 
+  Future<void> handleLogin() async {
+    Map<String, dynamic> data = {
+      "email": _emailController.text,
+      "password": _passwordController.text
+    };
+
+    try {
+      final response = await http
+          .post(Uri.parse("http://10.0.2.2:3000/auth/signin"), body: data);
+
+      final body = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Auth.setId(body["id"]);
+        Auth.setName(body["name"]);
+        Auth.setEmail(body["email"]);
+        Auth.setPassword(body["password"]);
+        Auth.setAdmin(body["admin"]);
+
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MenuScreen(),
+          ),
+        );
+      } else {
+        showSnackBar(body["error"], Icons.warning_rounded, Colors.red);
+      }
+    } catch (err) {
+      showSnackBar("Something went wrong", Icons.router_outlined, Colors.red);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
