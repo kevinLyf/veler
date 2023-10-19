@@ -81,12 +81,10 @@ class _LoginScreenState extends State<LoginScreen> {
               builder: (context) => const HomeScreen(),
             ),
           );
-          debugPrint(body.toString());
         } else {
           showSnackBar(body["error"], Icons.warning_rounded, Colors.red);
         }
       } catch (err) {
-        debugPrint(err.toString());
         showSnackBar("Something went wrong", Icons.router_outlined, Colors.red);
       }
     }
