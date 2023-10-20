@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:veler/features/screens/booking/booking_screen.dart';
 import 'package:veler/features/screens/map/map_sreen.dart';
 
 class DetailsScreen extends StatefulWidget {
@@ -41,7 +42,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
         height: 50,
         margin: const EdgeInsets.all(10),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => BookingScreen(hotel_id: widget.id),
+            ),
+          ),
           child: Center(
             child: Text(
               "Book now - \$${widget.price}",
