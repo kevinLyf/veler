@@ -195,7 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           if (_formKey.currentState!.validate()) handleLogin();
                         },
                         child: const Text(
-                          "Login",
+                          "Register",
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.white,

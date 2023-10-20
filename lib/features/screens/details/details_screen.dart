@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:veler/features/screens/booking/booking_screen.dart';
+import 'package:veler/features/screens/map/map_sreen.dart';
 
 class DetailsScreen extends StatefulWidget {
   late String id;
@@ -40,7 +42,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
         height: 50,
         margin: const EdgeInsets.all(10),
         child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => BookingScreen(hotel_id: widget.id),
+            ),
+          ),
           child: Center(
             child: Text(
               "Book now - \$${widget.price}",
@@ -200,21 +206,29 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 40),
+                                  const SizedBox(height: 20),
                                   SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 3,
+                                    width: MediaQuery.of(context).size.width,
                                     height: 45,
                                     child: ElevatedButton.icon(
                                       onPressed: () =>
-                                          Navigator.of(context).pop(),
+                                          Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => MapScreen(
+                                            name: widget.name,
+                                            address: widget.address,
+                                            lat: widget.lat,
+                                            lng: widget.lng,
+                                          ),
+                                        ),
+                                      ),
                                       icon: const Icon(
-                                        Icons.close_rounded,
+                                        Icons.fullscreen_rounded,
                                         color: Color(0xffEFEFEF),
                                         size: 30,
                                       ),
                                       label: const Text(
-                                        "Close",
+                                        "See more details",
                                         style: TextStyle(
                                           fontFamily: "Nunito",
                                           fontWeight: FontWeight.w800,
