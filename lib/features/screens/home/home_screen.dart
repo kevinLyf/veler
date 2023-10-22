@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:veler/features/screens/create/create_hotel_screen.dart';
 import 'package:veler/features/screens/details/details_screen.dart';
 import 'package:veler/features/screens/profile/profile_screen.dart';
 import 'package:veler/shared/models/hotel/Hotel.dart';
@@ -116,6 +117,18 @@ class _HomeScreenState extends State<HomeScreen> {
               Icons.person_rounded,
             ),
           ),
+          if (!isLoading && user["admin"])
+            IconButton(
+                onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => CreateHotelScreen(
+                          id: user["id"],
+                          name: user["name"],
+                          email: user["email"],
+                        ),
+                      ),
+                    ),
+                icon: Icon(Icons.create_rounded))
         ],
       ),
       body: isLoading

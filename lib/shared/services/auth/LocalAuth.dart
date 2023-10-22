@@ -12,15 +12,15 @@ class LocalAuth {
 
     try {
       return await auth.authenticate(
-        localizedReason: "Confirmar autenticação no aplicativo",
+        localizedReason: "Confirm Authentication",
         authMessages: const [
           AndroidAuthMessages(
-            cancelButton: "Cancelar",
-            signInTitle: "Validação Biométrica",
+            cancelButton: "Cancel",
+            signInTitle: "Biometric Validation",
             biometricHint: "",
           ),
           IOSAuthMessages(
-            cancelButton: "Cancelar",
+            cancelButton: "Cancel",
             lockOut: "",
             localizedFallbackTitle: "",
           ),

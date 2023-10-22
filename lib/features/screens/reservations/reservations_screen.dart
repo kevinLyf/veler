@@ -169,6 +169,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                     ),
                                   ],
                                 ),
+                                const SizedBox(width: 10),
                                 Icon(Icons.arrow_forward),
                                 const SizedBox(width: 10),
                                 Row(

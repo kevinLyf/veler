@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (await LocalAuth().authenticate()) {
         showSnackBar(
-          "Autenticação Biométrica feita com sucesso",
+          "Login with biometrics authentication",
           Icons.fingerprint_rounded,
           Colors.green,
         );
@@ -83,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       } else {
         showSnackBar(
-          "Biometria fracassou",
+          "Biometrics failed",
           Icons.fingerprint_rounded,
           Colors.red,
         );
