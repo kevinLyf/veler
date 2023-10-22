@@ -68,14 +68,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 padding: const EdgeInsets.all(10),
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 250,
+                  height: 200,
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
                     image: DecorationImage(
                       image: NetworkImage(
                         widget.image,
                       ),
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(5),
