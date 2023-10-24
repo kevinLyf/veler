@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getHotels() async {
+    hotels.clear();
     try {
       final response = await http.get(Uri.parse("http://10.0.2.2:3000/hotel"));
       final body = jsonDecode(response.body);
@@ -80,6 +81,28 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => isLoading = false);
       debugPrint(hotels.toString());
     }
+  }
+
+  void showSnackBar(String title, IconData icon, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: color,
+        content: ListTile(
+          leading: Icon(
+            icon,
+            size: 30,
+            color: Colors.white,
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
+                fontFamily: "Nunito",
+                fontWeight: FontWeight.w700,
+                fontSize: 16),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -259,11 +282,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontWeight: FontWeight.w600,
                                     color: Color(0xffC7C7C7),
                                   ),
-                                )
+                                ),
+                                const SizedBox(height: 20),
+                                if (user["admin"])
+                                  Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 55,
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        try {
+                                          var response = await http.delete(Uri.parse("http://10.0.2.2:3000/hotel/${item.id}"));
+                                          if(response.statusCode == 201 || response.statusCode == 200) {
+                                            var body = jsonDecode(response.body);
+                                            getHotels();
+                                            showSnackBar("Hotel sucessfully deleted", Icons.done_rounded, Colors.green);
+                                          }
+                                        } catch(err) {
+                                          showSnackBar("An error occurred while deleting the hotel", Icons.warning_rounded, Theme.of(context).colorScheme.primary);
+                                        }
+
+                                      },
+                                      child: Text(
+                                        "Delete",
+                                        style: TextStyle(
+                                          fontFamily: "Nunito",
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white
+                                        ),
+                                      ),
+                                    ),
+                                  )
                               ],
                             ),
                           ),
-                        )
+                        ),
                     ],
                   ),
                 ),
