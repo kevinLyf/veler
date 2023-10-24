@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:veler/features/screens/login/login_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:veler/shared/services/auth/Auth.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -81,6 +82,20 @@ class _SignupScreenState extends State<SignupScreen> {
     } catch (err) {
       showSnackBar("Something went wrong", Icons.warning_rounded, Colors.red);
     }
+  }
+
+  void resetToken() async {
+    await Auth.setId("");
+    await Auth.setName("");
+    await Auth.setEmail("");
+    await Auth.setAdmin(false);
+    await Auth.setPassword("");
+  }
+
+  @override
+  void initState() {
+    resetToken();
+    super.initState();
   }
 
   @override

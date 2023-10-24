@@ -108,7 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
@@ -287,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 if (user["admin"])
                                   Container(
                                     width: MediaQuery.of(context).size.width,
-                                    height: 55,
+                                    height: 50,
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         try {
