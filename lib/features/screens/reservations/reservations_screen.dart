@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:veler/features/screens/login/login_screen.dart';
 import 'package:veler/features/screens/profile/profile_screen.dart';
 import 'package:veler/shared/models/hotel/Hotel.dart';
 import 'package:veler/shared/models/reservation/Reservation.dart';
@@ -16,6 +18,7 @@ class ReservationScreen extends StatefulWidget {
 
 class _ReservationScreenState extends State<ReservationScreen> {
   List<Reservation> reservations = [];
+  Map<String, dynamic> user = {};
   List<Hotel> hotels = [];
   bool isLoading = true;
 
@@ -90,9 +93,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
           title: Text(
             title,
             style: const TextStyle(
-                fontFamily: "Nunito",
-                fontWeight: FontWeight.w700,
-                fontSize: 16),
+              fontFamily: "Nunito",
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
           ),
         ),
       ),
@@ -102,8 +106,63 @@ class _ReservationScreenState extends State<ReservationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: Container(
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: DrawerHeader(
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                onTap: () async {
+                  await Auth.setId("");
+                  await Auth.setName("");
+                  await Auth.setEmail("");
+                  await Auth.setAdmin(false);
+                  await Auth.setPassword("");
+
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                  showSnackBar(
+                    "Exit successfully",
+                    Icons.logout,
+                    Colors.green,
+                  );
+                },
+                leading: Icon(Icons.logout_rounded),
+                title: Text(
+                  "Logout",
+                  style: TextStyle(
+                    fontFamily: "Nunito",
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
@@ -218,17 +277,24 @@ class _ReservationScreenState extends State<ReservationScreen> {
                               child: ElevatedButton(
                                 onPressed: () async {
                                   try {
-                                    var response = await http.delete(Uri.parse("http://10.0.2.2:3000/reservation/${reservations[i].id}"));
-                                    if(response.statusCode == 201 || response.statusCode == 200) {
+                                    var response = await http.delete(Uri.parse(
+                                        "http://10.0.2.2:3000/reservation/${reservations[i].id}"));
+                                    if (response.statusCode == 201 ||
+                                        response.statusCode == 200) {
                                       var body = jsonDecode(response.body);
                                       getReservation();
                                       hotels.clear();
-                                      showSnackBar("Reservation sucessfully deleted", Icons.done_rounded, Colors.green);
+                                      showSnackBar(
+                                          "Reservation sucessfully deleted",
+                                          Icons.done_rounded,
+                                          Colors.green);
                                     }
-                                  } catch(err) {
-                                    showSnackBar("An error occurred while deleting the reservation", Icons.warning_rounded, Theme.of(context).colorScheme.primary);
+                                  } catch (err) {
+                                    showSnackBar(
+                                        "An error occurred while deleting the reservation",
+                                        Icons.warning_rounded,
+                                        Theme.of(context).colorScheme.primary);
                                   }
-
                                 },
                                 child: Text(
                                   "Delete",
@@ -236,13 +302,30 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                       fontFamily: "Nunito",
                                       fontSize: 16,
                                       fontWeight: FontWeight.w800,
-                                      color: Colors.white
-                                  ),
+                                      color: Colors.white),
                                 ),
                               ),
                             )
                           ],
                         ),
+                      ),
+                    if (reservations.isEmpty)
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Lottie.asset(
+                              "public/assets/animations/not_found.json"),
+                          Text(
+                            "You have no reservations",
+                            style: TextStyle(
+                              fontFamily: "Nunito",
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       )
                   ],
                 ),

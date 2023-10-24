@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:veler/features/screens/create/create_hotel_screen.dart';
 import 'package:veler/features/screens/details/details_screen.dart';
+import 'package:veler/features/screens/login/login_screen.dart';
 import 'package:veler/features/screens/profile/profile_screen.dart';
 import 'package:veler/shared/models/hotel/Hotel.dart';
 import 'package:veler/shared/services/auth/Auth.dart';
@@ -108,9 +110,63 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: Container(
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: DrawerHeader(
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              ListTile(
+                onTap: () async {
+                  await Auth.setId("");
+                  await Auth.setName("");
+                  await Auth.setEmail("");
+                  await Auth.setAdmin(false);
+                  await Auth.setPassword("");
 
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                  showSnackBar(
+                    "Exit successfully",
+                    Icons.logout,
+                    Colors.green,
+                  );
+                },
+                leading: Icon(Icons.logout_rounded),
+                title: Text(
+                  "Logout",
+                  style: TextStyle(
+                    fontFamily: "Nunito",
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
@@ -165,6 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: SafeArea(
                 child: SingleChildScrollView(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
                       for (var item in hotels)
                         GestureDetector(
@@ -293,25 +351,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: ElevatedButton(
                                       onPressed: () async {
                                         try {
-                                          var response = await http.delete(Uri.parse("http://10.0.2.2:3000/hotel/${item.id}"));
-                                          if(response.statusCode == 201 || response.statusCode == 200) {
-                                            var body = jsonDecode(response.body);
+                                          var response = await http.delete(
+                                              Uri.parse(
+                                                  "http://10.0.2.2:3000/hotel/${item.id}"));
+                                          if (response.statusCode == 201 ||
+                                              response.statusCode == 200) {
+                                            var body =
+                                                jsonDecode(response.body);
                                             getHotels();
-                                            showSnackBar("Hotel sucessfully deleted", Icons.done_rounded, Colors.green);
+                                            showSnackBar(
+                                                "Hotel sucessfully deleted",
+                                                Icons.done_rounded,
+                                                Colors.green);
                                           }
-                                        } catch(err) {
-                                          showSnackBar("An error occurred while deleting the hotel", Icons.warning_rounded, Theme.of(context).colorScheme.primary);
+                                        } catch (err) {
+                                          showSnackBar(
+                                              "An error occurred while deleting the hotel",
+                                              Icons.warning_rounded,
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .primary);
                                         }
-
                                       },
                                       child: Text(
                                         "Delete",
                                         style: TextStyle(
-                                          fontFamily: "Nunito",
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w800,
-                                          color: Colors.white
-                                        ),
+                                            fontFamily: "Nunito",
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w800,
+                                            color: Colors.white),
                                       ),
                                     ),
                                   )
@@ -319,6 +387,40 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
+                      if (hotels.isEmpty)
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                                "public/assets/animations/not_found.json"),
+                            Text(
+                              "There are no hotels registered",
+                              style: TextStyle(
+                                fontFamily: "Nunito",
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton.icon(
+                              onPressed: getHotels,
+                              icon: Icon(
+                                Icons.refresh_rounded,
+                                color: Colors.white,
+                              ),
+                              label: Text(
+                                "retry",
+                                style: TextStyle(
+                                    fontFamily: "Nunito",
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white),
+                              ),
+                            )
+                          ],
+                        )
                     ],
                   ),
                 ),
