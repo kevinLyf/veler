@@ -6,23 +6,33 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:veler/features/screens/menu/menu_screen.dart';
 
-class CreateHotelScreen extends StatefulWidget {
+class EditHotelScreen extends StatefulWidget {
   late String id;
+  late String image;
   late String name;
-  late String email;
+  late String description;
+  late double price;
+  late double lat;
+  late double lng;
+  late String address;
 
-  CreateHotelScreen({
+  EditHotelScreen({
     super.key,
     required this.id,
+    required this.image,
     required this.name,
-    required this.email,
+    required this.description,
+    required this.price,
+    required this.lat,
+    required this.lng,
+    required this.address,
   });
 
   @override
-  State<CreateHotelScreen> createState() => _CreateHotelScreenState();
+  State<EditHotelScreen> createState() => _EditHotelScreenScreenState();
 }
 
-class _CreateHotelScreenState extends State<CreateHotelScreen> {
+class _EditHotelScreenScreenState extends State<EditHotelScreen> {
   Set<Marker> markers = {};
   late LatLng location;
   final _formKey = GlobalKey<FormState>();
@@ -32,7 +42,7 @@ class _CreateHotelScreenState extends State<CreateHotelScreen> {
   final _addressController = TextEditingController();
   final _priceController = TextEditingController();
 
-  Future<void> handleLogin() async {
+  Future<void> handleUpdate() async {
     Map<String, dynamic> body = {
       "image": _imageController.text,
       "name": _nameController.text,
@@ -44,25 +54,48 @@ class _CreateHotelScreenState extends State<CreateHotelScreen> {
     };
 
     try {
-      var response = await http.post(
-        Uri.parse("http://10.0.2.2:3000/hotel"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(body),
-      );
+      var response = await http.put(
+          Uri.parse("http://10.0.2.2:3000/hotel/${widget.id}"),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(body));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         showSnackBar(
-          "Hotel sucessfully created",
+          "Hotel sucessfully updated",
           Icons.done_rounded,
           Colors.green,
         );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const MenuScreen(),
+          ),
+        );
       }
-
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MenuScreen()));
     } catch (err) {
       showSnackBar("Something went wrong", Icons.router_outlined, Colors.red);
     }
+  }
+
+  @override
+  void initState() {
+    Marker marker = Marker(
+      markerId: MarkerId(_nameController.text),
+      position: LatLng(
+        widget.lat,
+        widget.lng,
+      ),
+    );
+
+    setState(() {
+      _imageController.text = widget.image;
+      _nameController.text = widget.name;
+      _descriptionController.text = widget.description;
+      _priceController.text = widget.price.toString();
+      _addressController.text = widget.address;
+      location = LatLng(widget.lat, widget.lng);
+      markers.add(marker);
+    });
+    super.initState();
   }
 
   void showSnackBar(String title, IconData icon, Color color) {
@@ -78,9 +111,10 @@ class _CreateHotelScreenState extends State<CreateHotelScreen> {
           title: Text(
             title,
             style: const TextStyle(
-                fontFamily: "Nunito",
-                fontWeight: FontWeight.w700,
-                fontSize: 16),
+              fontFamily: "Nunito",
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
+            ),
           ),
         ),
       ),
@@ -101,17 +135,18 @@ class _CreateHotelScreenState extends State<CreateHotelScreen> {
         child: ElevatedButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              handleLogin();
+              handleUpdate();
             }
           },
           child: Center(
             child: Text(
-              "Create",
+              "Update",
               style: const TextStyle(
-                  fontFamily: "Nunito",
-                  color: Color(0xffEFEFEF),
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800),
+                fontFamily: "Nunito",
+                color: Color(0xffEFEFEF),
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ),
@@ -128,7 +163,7 @@ class _CreateHotelScreenState extends State<CreateHotelScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "Create a new hotel",
+                "Update hotel",
                 style: TextStyle(
                   fontFamily: "Nunito",
                   fontWeight: FontWeight.bold,
@@ -137,7 +172,7 @@ class _CreateHotelScreenState extends State<CreateHotelScreen> {
                 ),
               ),
               const Text(
-                "There we will create a new hotel",
+                "Renew hotel information",
                 style: TextStyle(
                   fontFamily: "Nunito",
                   fontWeight: FontWeight.w600,
@@ -172,10 +207,8 @@ class _CreateHotelScreenState extends State<CreateHotelScreen> {
 
                                   setState(() {
                                     markers.add(marker);
-                                    location = LatLng(
-                                      marker.position.latitude,
-                                      marker.position.longitude,
-                                    );
+                                    location = LatLng(marker.position.latitude,
+                                        marker.position.longitude);
                                   });
                                 },
                                 initialCameraPosition: CameraPosition(
